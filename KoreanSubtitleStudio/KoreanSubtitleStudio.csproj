@@ -6,7 +6,7 @@
     <ProjectGuid>{8B153195-D322-4638-8490-C9ACB1933FB2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>KoreanSubtitleStudio</RootNamespace>
-    <AssemblyName>KoreanSubtitleStudio</AssemblyName>
+    <AssemblyName>SRTtoVTTConverter</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>

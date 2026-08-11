@@ -13,6 +13,6 @@ if errorlevel 1 (
   exit /b 1
 )
 if not exist "배포" mkdir "배포"
-copy /y "KoreanSubtitleStudio\bin\Release\KoreanSubtitleStudio.exe" "배포\한국어_자막_스튜디오.exe" > nul
-echo 빌드 완료: 배포\한국어_자막_스튜디오.exe
+copy /y "KoreanSubtitleStudio\bin\Release\SRTtoVTTConverter.exe" "배포\SRT_to_VTT_자막_변환기.exe" > nul
+echo 빌드 완료: 배포\SRT_to_VTT_자막_변환기.exe
 pause

@@ -1,4 +1,4 @@
-# 한국어 자막 스튜디오
+# SRT → VTT 자막 변환기
 
 > 한국어 SRT 자막을 다양한 플랫폼과 웹 플레이어에서 사용할 수 있는 WebVTT로 변환하는 Windows 데스크톱 프로그램
 
@@ -6,7 +6,7 @@
 ![.NET Framework](https://img.shields.io/badge/.NET_Framework-4.x-512BD4)
 ![Output](https://img.shields.io/badge/Output-WebVTT-635BFF)
 
-한국어 자막 스튜디오는 별도의 설치 과정 없이 실행할 수 있는 SRT → VTT 일괄 변환 도구입니다.
+SRT → VTT 자막 변환기는 별도의 설치 과정 없이 실행할 수 있는 한국어 자막 일괄 변환 도구입니다.
 
 한글 인코딩을 자동으로 판별하고, 국내 LMS 및 Windows 프로그램에서 글자가 깨지지 않도록 UTF-8 BOM 형식으로 결과를 저장합니다.
 
@@ -25,7 +25,7 @@
 
 ## 빠른 시작
 
-1. [`배포/한국어_자막_스튜디오.exe`](배포/한국어_자막_스튜디오.exe)를 내려받아 실행합니다.
+1. [`배포/SRT_to_VTT_자막_변환기.exe`](배포/SRT_to_VTT_자막_변환기.exe)를 내려받아 실행합니다.
 2. `SRT 추가` 버튼을 누르거나 SRT 파일을 프로그램 창에 끌어놓습니다.
 3. 저장 위치, 덮어쓰기 여부, 시간 보정값을 설정합니다.
 4. `VTT 변환 시작`을 누릅니다.
@@ -75,7 +75,7 @@
 Release 빌드가 완료되면 아래 위치에 단일 실행 파일이 생성됩니다.
 
 ```text
-배포\한국어_자막_스튜디오.exe
+배포\SRT_to_VTT_자막_변환기.exe
 ```
 
 ## 프로젝트 구조
@@ -89,7 +89,7 @@ srt_to_vtt/
 │  ├─ MainWindow.xaml.cs                # 파일 선택 및 작업 흐름
 │  └─ KoreanSubtitleStudio.csproj
 ├─ 배포/
-│  └─ 한국어_자막_스튜디오.exe
+│  └─ SRT_to_VTT_자막_변환기.exe
 ├─ KoreanSubtitleStudio.sln
 └─ 빌드.bat
 ```
@@ -119,8 +119,3 @@ WEBVTT
 - 동일한 이름의 VTT가 존재하고 덮어쓰기를 선택하지 않으면 해당 파일은 변환하지 않습니다.
 - 손상되었거나 유효한 타임라인이 없는 SRT는 오류 메시지로 안내합니다.
 - Windows용 WPF 애플리케이션이므로 macOS와 Linux에서는 직접 실행할 수 없습니다.
-
-## 개발자
-
-- GitHub: [@Dyeon12](https://github.com/Dyeon12)
-- 문의: `flfldh@hufs.ac.kr`
