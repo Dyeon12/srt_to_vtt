@@ -25,7 +25,7 @@ SRT → VTT 자막 변환기는 별도의 설치 과정 없이 실행할 수 있
 
 ## 빠른 시작
 
-1. [`배포/SRT_to_VTT_자막_변환기.exe`](배포/SRT_to_VTT_자막_변환기.exe)를 내려받아 실행합니다.
+1. [`배포/SRT-to-VTT-Converter-Windows-x64.exe`](배포/SRT-to-VTT-Converter-Windows-x64.exe)를 내려받아 실행합니다.
 2. `SRT 추가` 버튼을 누르거나 SRT 파일을 프로그램 창에 끌어놓습니다.
 3. 저장 위치, 덮어쓰기 여부, 시간 보정값을 설정합니다.
 4. `VTT 변환 시작`을 누릅니다.
@@ -75,7 +75,7 @@ SRT → VTT 자막 변환기는 별도의 설치 과정 없이 실행할 수 있
 Release 빌드가 완료되면 아래 위치에 단일 실행 파일이 생성됩니다.
 
 ```text
-배포\SRT_to_VTT_자막_변환기.exe
+배포\SRT-to-VTT-Converter-Windows-x64.exe
 ```
 
 ## 프로젝트 구조
@@ -89,7 +89,7 @@ srt_to_vtt/
 │  ├─ MainWindow.xaml.cs                # 파일 선택 및 작업 흐름
 │  └─ KoreanSubtitleStudio.csproj
 ├─ 배포/
-│  └─ SRT_to_VTT_자막_변환기.exe
+│  └─ SRT-to-VTT-Converter-Windows-x64.exe
 ├─ KoreanSubtitleStudio.sln
 └─ 빌드.bat
 ```
