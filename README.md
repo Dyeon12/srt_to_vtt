@@ -1,6 +1,6 @@
 # 한국어 자막 스튜디오
 
-> 한국어 SRT 자막을 강의 플랫폼과 웹 플레이어에서 사용할 수 있는 WebVTT로 변환하는 Windows 데스크톱 프로그램
+> 한국어 SRT 자막을 다양한 플랫폼과 웹 플레이어에서 사용할 수 있는 WebVTT로 변환하는 Windows 데스크톱 프로그램
 
 ![Windows](https://img.shields.io/badge/Windows-64bit-0078D4?logo=windows&logoColor=white)
 ![.NET Framework](https://img.shields.io/badge/.NET_Framework-4.x-512BD4)
@@ -54,7 +54,7 @@
 3. BOM 없는 UTF-8
 4. 한국어 ANSI(CP949)
 
-출력 VTT는 항상 **UTF-8 BOM**으로 저장합니다. BOM 없는 UTF-8을 ANSI로 잘못 인식하는 일부 Windows 편집기와 국내 강의 플랫폼에서도 한글이 정상적으로 표시되도록 하기 위한 설정입니다.
+출력 VTT는 항상 **UTF-8 BOM**으로 저장합니다. BOM 없는 UTF-8을 ANSI로 잘못 인식하는 일부 Windows 편집기와 국내 자막 플랫폼에서도 한글이 정상적으로 표시되도록 하기 위한 설정입니다.
 
 ## 직접 빌드하기
 
@@ -101,7 +101,7 @@ SRT 입력:
 ```srt
 1
 00:00:01,250 --> 00:00:03,500
-안녕하세요. 강의를 시작하겠습니다.
+안녕하세요. 자막 변환을 시작하겠습니다.
 ```
 
 WebVTT 출력:
@@ -110,7 +110,7 @@ WebVTT 출력:
 WEBVTT
 
 00:00:01.250 --> 00:00:03.500
-안녕하세요. 강의를 시작하겠습니다.
+안녕하세요. 자막 변환을 시작하겠습니다.
 ```
 
 ## 참고 사항
