@@ -103,6 +103,40 @@ namespace KoreanSubtitleStudio
 
         private void OnRefreshPreview(object sender, RoutedEventArgs e) { ShowPreview(true); }
 
+        private void OnOpenVttInPreview(object sender, RoutedEventArgs e)
+        {
+            var picker = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "미리 볼 VTT 자막 선택",
+                Filter = "WebVTT 자막 (*.vtt)|*.vtt"
+            };
+            if (picker.ShowDialog() != true) return;
+
+            try
+            {
+                var bytes = File.ReadAllBytes(picker.FileName);
+                string content;
+                if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
+                    content = System.Text.Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3);
+                else
+                {
+                    try { content = new System.Text.UTF8Encoding(false, true).GetString(bytes); }
+                    catch (System.Text.DecoderFallbackException) { content = System.Text.Encoding.GetEncoding(949).GetString(bytes); }
+                }
+                if (!content.TrimStart().StartsWith("WEBVTT", StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidDataException("올바른 WebVTT 파일이 아닙니다.");
+
+                PreviewTitle.Text = Path.GetFileName(picker.FileName) + " · 기존 VTT 파일";
+                PreviewText.Text = content;
+                PreviewText.ScrollToHome();
+                WorkspaceTabs.SelectedIndex = 1;
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "VTT 열기 오류", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
         private void ShowPreview(bool switchToPreview)
         {
             var index = InputList.SelectedIndex;

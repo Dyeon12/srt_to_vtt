@@ -118,7 +118,10 @@
                     <TextBlock x:Name="PreviewTitle" Text="파일을 선택해 주세요" Foreground="#354158" FontWeight="SemiBold"/>
                     <TextBlock Text="저장될 WebVTT 내용을 미리 확인할 수 있습니다" Foreground="#929CAF" FontSize="10" Margin="0,3,0,0"/>
                   </StackPanel>
-                  <Button Content="↻  새로고침" HorizontalAlignment="Right" Padding="12,7" Click="OnRefreshPreview"/>
+                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="VTT 파일 열기" Padding="12,7" Margin="0,0,7,0" Click="OnOpenVttInPreview"/>
+                    <Button Content="↻  변환 미리보기" Padding="12,7" Click="OnRefreshPreview"/>
+                  </StackPanel>
                 </Grid>
                 <TextBox x:Name="PreviewText" Grid.Row="1" Text="파일 목록에서 미리 볼 SRT를 선택해 주세요."
                          IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" FontFamily="Consolas"
