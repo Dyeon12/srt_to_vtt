@@ -29,6 +29,7 @@
     <Compile Include="App.xaml.cs"><DependentUpon>App.xaml</DependentUpon></Compile>
     <Compile Include="MainWindow.xaml.cs"><DependentUpon>MainWindow.xaml</DependentUpon></Compile>
     <Compile Include="Services\SubtitleConversionService.cs"/>
+    <Compile Include="Services\ExplorerFolderPicker.cs"/>
     <Compile Include="Properties\AssemblyInfo.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

@@ -14,6 +14,13 @@ namespace KoreanSubtitleStudio.Services
         public ConversionResult(string outputPath, int cueCount) { OutputPath = outputPath; CueCount = cueCount; }
     }
 
+    public sealed class PreviewResult
+    {
+        public string Content { get; private set; }
+        public int CueCount { get; private set; }
+        public PreviewResult(string content, int cueCount) { Content = content; CueCount = cueCount; }
+    }
+
     public sealed class SubtitleConversionService
     {
         private static readonly Regex TimelinePattern = new Regex(
@@ -28,6 +35,20 @@ namespace KoreanSubtitleStudio.Services
                 throw new InvalidDataException("SRT 확장자 파일만 변환할 수 있습니다.");
             if (File.Exists(outputPath) && !overwrite)
                 throw new IOException("동일한 VTT 파일이 이미 존재합니다.");
+
+            var preview = CreatePreview(inputPath, shiftMilliseconds);
+            var directory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
+            File.WriteAllText(outputPath, preview.Content, new UTF8Encoding(true));
+            return new ConversionResult(outputPath, preview.CueCount);
+        }
+
+        public PreviewResult CreatePreview(string inputPath, int shiftMilliseconds)
+        {
+            if (string.IsNullOrWhiteSpace(inputPath) || !File.Exists(inputPath))
+                throw new FileNotFoundException("SRT 파일을 찾을 수 없습니다.", inputPath);
+            if (!string.Equals(Path.GetExtension(inputPath), ".srt", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException("SRT 확장자 파일만 변환할 수 있습니다.");
 
             var source = DecodeSource(File.ReadAllBytes(inputPath));
             var normalized = source.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
@@ -59,10 +80,7 @@ namespace KoreanSubtitleStudio.Services
             }
 
             if (cueCount == 0) throw new InvalidDataException("유효한 SRT 타임라인을 찾지 못했습니다.");
-            var directory = Path.GetDirectoryName(outputPath);
-            if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-            File.WriteAllText(outputPath, document.ToString(), new UTF8Encoding(true));
-            return new ConversionResult(outputPath, cueCount);
+            return new PreviewResult(document.ToString(), cueCount);
         }
 
         private static int FindTimeline(IList<string> lines)

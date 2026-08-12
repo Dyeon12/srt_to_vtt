@@ -22,6 +22,7 @@ namespace KoreanSubtitleStudio
             public int Shift;
             public bool Subfolder;
             public bool Overwrite;
+            public string CustomFolder;
         }
 
         private sealed class WorkReport
@@ -92,6 +93,76 @@ namespace KoreanSubtitleStudio
             EmptyGuide.Visibility = _inputs.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             CountLabel.Text = _inputs.Count + "개 파일";
             StateLabel.Text = _inputs.Count == 0 ? "변환할 파일을 추가해 주세요." : "변환 준비가 완료되었습니다.";
+            if (_inputs.Count > 0 && InputList.SelectedIndex < 0) InputList.SelectedIndex = 0;
+        }
+
+        private void OnInputSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (InputList.SelectedIndex >= 0) ShowPreview(false);
+        }
+
+        private void OnRefreshPreview(object sender, RoutedEventArgs e) { ShowPreview(true); }
+
+        private void ShowPreview(bool switchToPreview)
+        {
+            var index = InputList.SelectedIndex;
+            if (index < 0 || index >= _inputs.Count)
+            {
+                PreviewTitle.Text = "파일을 선택해 주세요";
+                PreviewText.Text = "파일 목록에서 미리 볼 SRT를 선택해 주세요.";
+                return;
+            }
+
+            int shift;
+            if (!TryReadShift(out shift))
+            {
+                PreviewTitle.Text = Path.GetFileName(_inputs[index]);
+                PreviewText.Text = "시간 보정값이 올바르지 않아 미리보기를 만들 수 없습니다.";
+                if (switchToPreview) WorkspaceTabs.SelectedIndex = 1;
+                return;
+            }
+
+            try
+            {
+                var preview = new SubtitleConversionService().CreatePreview(_inputs[index], shift);
+                PreviewTitle.Text = Path.GetFileName(_inputs[index]) + " · " + preview.CueCount + "개 자막";
+                PreviewText.Text = preview.Content;
+                PreviewText.ScrollToHome();
+                if (switchToPreview) WorkspaceTabs.SelectedIndex = 1;
+            }
+            catch (Exception exception)
+            {
+                PreviewTitle.Text = Path.GetFileName(_inputs[index]);
+                PreviewText.Text = "미리보기 오류\r\n\r\n" + exception.Message;
+                if (switchToPreview) WorkspaceTabs.SelectedIndex = 1;
+            }
+        }
+
+        private bool TryReadShift(out int milliseconds)
+        {
+            double seconds;
+            var valid = double.TryParse(ShiftInput.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out seconds) ||
+                        double.TryParse(ShiftInput.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out seconds);
+            if (!valid || Math.Abs(seconds) > 86400) { milliseconds = 0; return false; }
+            milliseconds = (int)Math.Round(seconds * 1000);
+            return true;
+        }
+
+        private void OnDestinationChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (CustomFolderPanel != null)
+                CustomFolderPanel.Visibility = DestinationChoice.SelectedIndex == 2 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void OnBrowseFolder(object sender, RoutedEventArgs e)
+        {
+            var picker = new ExplorerFolderPicker
+            {
+                Title = "변환된 VTT 파일을 저장할 폴더 선택",
+                InitialFolder = Directory.Exists(CustomFolderInput.Text) ? CustomFolderInput.Text : null
+            };
+            var selectedFolder = picker.ShowDialog(this);
+            if (!string.IsNullOrWhiteSpace(selectedFolder)) CustomFolderInput.Text = selectedFolder;
         }
 
         private void OnStart(object sender, RoutedEventArgs e)
@@ -101,24 +172,26 @@ namespace KoreanSubtitleStudio
                 MessageBox.Show("SRT 파일을 먼저 추가해 주세요.", "파일 없음", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            double seconds;
-            if (!double.TryParse(ShiftInput.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out seconds) &&
-                !double.TryParse(ShiftInput.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out seconds))
+            int shift;
+            if (!TryReadShift(out shift))
             {
                 MessageBox.Show("시간 보정값을 숫자로 입력해 주세요. 예: -1.500", "입력 오류", MessageBoxButton.OK, MessageBoxImage.Warning);
                 ShiftInput.Focus(); return;
             }
-            if (Math.Abs(seconds) > 86400)
+            if (DestinationChoice.SelectedIndex == 2 && string.IsNullOrWhiteSpace(CustomFolderInput.Text))
             {
-                MessageBox.Show("시간 보정 범위는 ±24시간입니다.", "입력 오류", MessageBoxButton.OK, MessageBoxImage.Warning); return;
+                MessageBox.Show("VTT 파일을 저장할 폴더를 선택해 주세요.", "저장 폴더 없음", MessageBoxButton.OK, MessageBoxImage.Information);
+                OnBrowseFolder(sender, e);
+                if (string.IsNullOrWhiteSpace(CustomFolderInput.Text)) return;
             }
             SetWorking(true);
             WorkProgress.Value = 0;
             FolderButton.Visibility = Visibility.Collapsed;
             _worker.RunWorkerAsync(new WorkRequest
             {
-                Files = _inputs.ToArray(), Shift = (int)Math.Round(seconds * 1000),
-                Subfolder = DestinationChoice.SelectedIndex == 1, Overwrite = OverwriteChoice.IsChecked == true
+                Files = _inputs.ToArray(), Shift = shift,
+                Subfolder = DestinationChoice.SelectedIndex == 1, Overwrite = OverwriteChoice.IsChecked == true,
+                CustomFolder = DestinationChoice.SelectedIndex == 2 ? CustomFolderInput.Text : null
             });
         }
 
@@ -133,7 +206,9 @@ namespace KoreanSubtitleStudio
                 try
                 {
                     var parent = Path.GetDirectoryName(input);
-                    var destination = request.Subfolder ? Path.Combine(parent, "VTT") : parent;
+                    var destination = !string.IsNullOrEmpty(request.CustomFolder)
+                        ? request.CustomFolder
+                        : request.Subfolder ? Path.Combine(parent, "VTT") : parent;
                     var output = Path.Combine(destination, Path.GetFileNameWithoutExtension(input) + ".vtt");
                     converter.Convert(input, output, request.Shift, request.Overwrite);
                     _recentFolder = destination;
@@ -172,6 +247,7 @@ namespace KoreanSubtitleStudio
         {
             StartButton.IsEnabled = !working; InputList.IsEnabled = !working;
             DestinationChoice.IsEnabled = !working; OverwriteChoice.IsEnabled = !working; ShiftInput.IsEnabled = !working;
+            CustomFolderInput.IsEnabled = !working;
         }
 
         private void OnOpenFolder(object sender, RoutedEventArgs e)
